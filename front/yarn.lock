@@ -9784,6 +9784,11 @@ react-is@^17.0.1:
   resolved "https://registry.npmjs.org/react-is/-/react-is-17.0.1.tgz"
   integrity sha512-NAnt2iGDXohE5LI7uBnLnqvLQMtzhkiAOLXTmv+qnF9Ky7xAPcX8Up/xWIhxvLVGJvuLiNc4xQLtuqDRzb4fSA==
 
+react-js-loader@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/react-js-loader/-/react-js-loader-0.1.0.tgz#84f5631a917fec930ba0316be0a224c4ae89843d"
+  integrity sha512-ROjgt1+3bfxigYBKAEa3pOTUJRCZgksymPoQ9djgxLEpqAXM/zin5cVt2MFs6xZ4zqM+g5XhJdgYUN9FYtNpCQ==
+
 react-lifecycles-compat@^3.0.4:
   version "3.0.4"
   resolved "https://registry.npmjs.org/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz"

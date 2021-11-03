@@ -1,19 +1,20 @@
 import { useState } from "react";
 import { FormInput, FormSelect } from "shards-react";
 import Zoom from "react-reveal/Zoom";
-
-export enum InputChoice {
-  UniqueDate = "unique_date",
-  BetweenDate = "between_date",
-}
+import { InputChoice } from "./types";
+import { useStore } from "./store";
 
 const CHOICES = [
   { label: "À une date", value: InputChoice.UniqueDate },
   { label: "Entre 2 dates", value: InputChoice.BetweenDate },
 ];
 
-function Input(props: any) {
+const formatInputDate = (e: any) => new Date(e.currentTarget.value).getTime();
+
+function Input() {
   const [selected, setSelected] = useState(InputChoice.UniqueDate);
+  const [, setBeginDate] = useStore("beginDate");
+  const [, setEndDate] = useStore("endDate");
 
   return (
     <div className="flex px-10 py-20 items-center">
@@ -31,7 +32,10 @@ function Input(props: any) {
       <div className="flex-1 flex">
         <div className="flex-1">
           <Zoom>
-            <FormInput placeholder="My form input" type="date" />
+            <FormInput
+              type="date"
+              onChange={(e: any) => setBeginDate(formatInputDate(e))}
+            />
           </Zoom>
         </div>
         <div
@@ -42,7 +46,10 @@ function Input(props: any) {
             overflow: "hidden",
           }}
         >
-          <FormInput placeholder="My form input" type="date" />
+          <FormInput
+            type="date"
+            onChange={(e: any) => setEndDate(formatInputDate(e))}
+          />
         </div>
       </div>
     </div>
