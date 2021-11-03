@@ -22,12 +22,19 @@ def import_all_dates():
 
 
 def import_data_between_dates(start, end):
-    # getDataBetweenDates = [
-    #     PullDataBetweenDates(dateStart=start, dateEnd=end)
-    # ]
-    # for data in getDataBetweenDates:
-    #     db.session.add(data)
-    db.session.commit()
+    dateTimeObjS = datetime.datetime.fromtimestamp(start)
+    dateTimeObjE = datetime.datetime.fromtimestamp(end)
+
+    dataList = []
+    for i in RawData.query.filter(RawData.date.between(dateTimeObjS, dateTimeObjE)):
+        opening = i.opening
+        high = i.high
+        low = i.low
+        closing = i.closing
+        date = i.date
+        dataList.append([opening, high, low, closing, date])
+    print(dataList)
+    return dataList
 
 
 def post_data_in_db():
