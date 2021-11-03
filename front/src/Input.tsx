@@ -9,7 +9,8 @@ const CHOICES = [
   { label: "Entre 2 dates", value: InputChoice.BetweenDate },
 ];
 
-const formatInputDate = (e: any) => new Date(e.currentTarget.value).getTime();
+const formatInputDate = (e: any) =>
+  new Date(e.currentTarget.value).getTime() / 1000;
 
 function Input() {
   const [selected, setSelected] = useState(InputChoice.UniqueDate);
