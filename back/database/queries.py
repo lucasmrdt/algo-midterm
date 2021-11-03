@@ -9,14 +9,16 @@ def get_all_content_of_test():
 
 
 def import_all_dates():
-    getAllData = []
+    dataList = []
+    for i in RawData.query.all():
+        opening = i.opening
+        high = i.high
+        low = i.low
+        closing = i.closing
+        date = i.date
+        dataList.append([opening, high, low, closing, date])
 
-    # content = select(allData)
-    # result = conn.execute(content)
-    # for row in result:
-    #     getAllData.append(row)
-
-    return getAllData
+    return dataList
 
 
 def import_data_between_dates(start, end):
