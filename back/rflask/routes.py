@@ -22,5 +22,5 @@ def get_all_data_from_db():
 
 @app.route("/", methods=["GET"])
 def get_data_interval():
-    import_data_between_dates(20120814, 20160926)
+    import_data_between_dates(1347573600, 1379109600)
     return "All data fetched between dates"

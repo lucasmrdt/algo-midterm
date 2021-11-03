@@ -22,17 +22,21 @@ def import_all_dates():
 
 
 def import_data_between_dates(start, end):
-    dateTimeObjS = datetime.datetime.fromtimestamp(start)
-    dateTimeObjE = datetime.datetime.fromtimestamp(end)
+    dateTimeObjS = datetime.datetime.fromtimestamp(start).strftime('%Y-%m-%d')
+    dateTimeObjE = datetime.datetime.fromtimestamp(end).strftime('%Y-%m-%d')
+    print(dateTimeObjS)
+
+    request_format = RawData.query.filter(RawData.date <= dateTimeObjE).filter(RawData.date >= dateTimeObjS)
 
     dataList = []
-    for i in RawData.query.filter(RawData.date.between(dateTimeObjS, dateTimeObjE)):
+    for i in request_format:
         opening = i.opening
         high = i.high
         low = i.low
         closing = i.closing
         date = i.date
         dataList.append([opening, high, low, closing, date])
+
     print(dataList)
     return dataList
 
