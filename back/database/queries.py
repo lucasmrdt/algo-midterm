@@ -9,23 +9,32 @@ def get_all_content_of_test():
 
 
 def import_all_dates():
-    getAllData = []
+    dataList = []
+    for i in RawData.query.all():
+        opening = i.opening
+        high = i.high
+        low = i.low
+        closing = i.closing
+        date = i.date
+        dataList.append([opening, high, low, closing, date])
 
-    # content = select(allData)
-    # result = conn.execute(content)
-    # for row in result:
-    #     getAllData.append(row)
-
-    return getAllData
+    return dataList
 
 
 def import_data_between_dates(start, end):
-    # getDataBetweenDates = [
-    #     PullDataBetweenDates(dateStart=start, dateEnd=end)
-    # ]
-    # for data in getDataBetweenDates:
-    #     db.session.add(data)
-    db.session.commit()
+    dateTimeObjS = datetime.datetime.fromtimestamp(start).strftime('%Y-%m-%d')
+    dateTimeObjE = datetime.datetime.fromtimestamp(end).strftime('%Y-%m-%d')
+    print(dateTimeObjS)
+
+    request_format = RawData.query.filter(
+        RawData.date <= dateTimeObjE).filter(RawData.date >= dateTimeObjS)
+
+    data_list = []
+    for i in request_format:
+        data_list.append(i.serealize())
+
+    print(data_list)
+    return data_list
 
 
 def post_data_in_db():

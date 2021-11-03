@@ -12,6 +12,6 @@ export interface APIData {
   date: number;
   opening: number;
   closing: number;
-  min: number;
-  max: number;
+  low: number;
+  high: number;
 }

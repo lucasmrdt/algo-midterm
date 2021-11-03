@@ -284,7 +284,7 @@ function Graph() {
       setData(
         data.map((d) => ({
           x: new Date(d.date),
-          y: [d.min, d.opening, d.closing, d.max],
+          y: [d.low, d.opening, d.closing, d.high],
         }))
       );
     } catch {}
