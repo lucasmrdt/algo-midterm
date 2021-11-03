@@ -284,7 +284,7 @@ function Graph() {
       setData(
         data.map((d) => ({
           x: new Date(d.date),
-          y: [d.low, d.opening, d.closing, d.high],
+          y: [d.opening, d.high, d.low, d.closing],
         }))
       );
     } catch {}
@@ -299,7 +299,7 @@ function Graph() {
     <>
       <Chart
         options={options}
-        series={data || []}
+        series={[{ data: data || [] }]}
         type="candlestick"
         height="90%"
       />

@@ -24,6 +24,7 @@ def get_data_interval():
     if end == 'null':
         end = begin
     try:
+        print(begin, end)
         begin = int(begin)
         end = int(end)
     except ValueError:
@@ -38,6 +39,6 @@ def get_all_data_from_db():
     return "All data fetched"
 
 
-@ app.errorhandler(AssertionError)
+@ app.errorhandler(Exception)
 def exception_handler(error):
     return jsonify({"error": str(error)}), 400

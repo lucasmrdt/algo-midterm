@@ -47,10 +47,10 @@ def post_data_in_db():
     for i in rows[1:]:
         line_history = RawData(**{
             'date': datetime.datetime.strptime(i[0], '%b %d, %Y').date(),
-            'opening': float(i[1].replace(',', '')),
-            'high': float(i[2].replace(',', '')),
-            'low': float(i[3].replace(',', '')),
-            'closing': float(i[4].replace(',', '')),
+            'opening': float(i[2].replace(',', '')),
+            'high': float(i[3].replace(',', '')),
+            'low': float(i[4].replace(',', '')),
+            'closing': float(i[1].replace(',', '')),
         })
         db.session.add(line_history)
     db.session.commit()

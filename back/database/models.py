@@ -1,3 +1,4 @@
+from enum import unique
 from sqlalchemy import inspect
 from .db import db
 
@@ -14,4 +15,4 @@ class RawData(db.Model, Serealizer):
     high = db.Column(db.Float)
     low = db.Column(db.Float)
     closing = db.Column(db.Float)
-    date = db.Column(db.Date)
+    date = db.Column(db.Date, unique=True)
