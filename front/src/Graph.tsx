@@ -81,6 +81,9 @@ function Graph() {
             toolbar: {
               show: !!data && data.length <= MAX_ITEMS,
             },
+            animations: {
+              enabled: !!data && data.length <= MAX_ITEMS,
+            },
           },
         }}
         series={[{ data: data || [] }]}
