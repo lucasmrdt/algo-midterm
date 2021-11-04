@@ -1,20 +1,16 @@
+from datetime import datetime
 from flask import jsonify, request
-from algo import query_test_data
-from database import post_data_in_db
-from database import import_all_dates
-from database import import_data_between_dates
+from database import insert_data_from_file, select_all_data, select_data_between_dates, create_db
+from algo import get_data_by_date
 from .app import app
+from .constants import CSV_FILE_PATH
 
 
-@app.route("/test2", methods=["GET"])
-def get_test():
-    return jsonify(query_test_data())
-
-
-@app.route("/test", methods=["GET"])
+@app.route("/init-db", methods=["POST"])
 def send_data_to_db():
-    post_data_in_db()
-    return "Ok, data pushed."
+    create_db()
+    insert_data_from_file(CSV_FILE_PATH)
+    return "DB successfully created."
 
 
 @app.route("/data", methods=["GET"])
@@ -24,19 +20,35 @@ def get_data_interval():
     if end == 'null':
         end = begin
     try:
-        print(begin, end)
         begin = int(begin)
         end = int(end)
     except ValueError:
         raise Exception("Invalid params")
-    data = import_data_between_dates(begin, end)
+    data = select_data_between_dates(begin, end)
     return jsonify(data)
 
 
-@app.route("/test3", methods=["GET"])
-def get_all_data_from_db():
-    import_all_dates()
-    return "All data fetched"
+@app.route("/data/algo", methods=["GET"])
+def get_data_interval_algo():
+    begin = request.args.get('begin')
+    end = request.args.get('end', begin)
+    if end == 'null':
+        end = begin
+    try:
+        begin = int(begin)
+        end = int(end)
+    except ValueError:
+        raise Exception("Invalid params")
+    if begin == end:
+        begin = datetime.fromtimestamp(begin).date()
+        return jsonify(get_data_by_date(begin))
+    raise NotImplementedError("Not implemented yet")
+
+
+@app.route("/flush", methods=["GET"])
+def flush():
+    data = [data.serealize() for data in select_all_data()]
+    return jsonify(data)
 
 
 @ app.errorhandler(Exception)

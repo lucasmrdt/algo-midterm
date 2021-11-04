@@ -1,57 +1,34 @@
-from .models import RawData
-from .db import db
+from typing import List
 import datetime
 import csv
+from .models import RawData
+from .db import db
 
 
-def get_all_content_of_test():
-    return Test.query.all()
+def select_all_data() -> List[RawData]:
+    return RawData.query.all()
 
 
-def import_all_dates():
-    dataList = []
-    for i in RawData.query.all():
-        opening = i.opening
-        high = i.high
-        low = i.low
-        closing = i.closing
-        date = i.date
-        dataList.append([opening, high, low, closing, date])
-
-    return dataList
-
-
-def import_data_between_dates(start, end):
+def select_data_between_dates(start, end) -> List[RawData]:
     dateTimeObjS = datetime.datetime.fromtimestamp(start).strftime('%Y-%m-%d')
     dateTimeObjE = datetime.datetime.fromtimestamp(end).strftime('%Y-%m-%d')
-    print(dateTimeObjS)
-
-    request_format = RawData.query.filter(
+    rows = RawData.query.filter(
         RawData.date <= dateTimeObjE).filter(RawData.date >= dateTimeObjS)
 
-    data_list = []
-    for i in request_format:
-        data_list.append(i.serealize())
-
-    print(data_list)
-    return data_list
+    return [row.serealize() for row in rows]
 
 
-def post_data_in_db():
-    file = open('data.csv', encoding='utf-8')
+def insert_data_from_file(file: str):
+    file = open(file, encoding='utf-8')
     csvreader = csv.reader(file)
-    rows = []
-    for row in csvreader:
-        rows.append(row)
+    rows = [row for row in csvreader]
 
-    for i in rows[1:]:
-        line_history = RawData(**{
-            'date': datetime.datetime.strptime(i[0], '%b %d, %Y').date(),
-            'opening': float(i[2].replace(',', '')),
-            'high': float(i[3].replace(',', '')),
-            'low': float(i[4].replace(',', '')),
-            'closing': float(i[1].replace(',', '')),
-        })
-        db.session.add(line_history)
+    for date, closing, opening, high, low, *_ in rows[1:]:
+        rawData = RawData(
+            date=datetime.datetime.strptime(date, '%b %d, %Y').date(),
+            opening=float(opening.replace(',', '')),
+            high=float(high.replace(',', '')),
+            low=float(low.replace(',', '')),
+            closing=float(closing.replace(',', '')))
+        db.session.add(rawData)
     db.session.commit()
-    return "Ok"
