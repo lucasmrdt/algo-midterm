@@ -6,6 +6,8 @@ import { ENDPOINT } from "./constants";
 import { useStore } from "./store";
 import { APIData } from "./types";
 
+const MAX_ITEMS = 365;
+
 const options: Props["options"] = {
   xaxis: {
     type: "datetime",
@@ -41,6 +43,9 @@ function Graph() {
 
   const fetchData = useCallback(async () => {
     setLoading(true);
+    if (data && data.length > MAX_ITEMS) {
+      setData([]);
+    }
     try {
       const res = await fetch(
         `${ENDPOINT}/data?begin=${beginDate}&end=${endDate}`,
@@ -60,6 +65,7 @@ function Graph() {
       );
     } catch {}
     setLoading(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [beginDate, endDate, setData]);
 
   useEffect(() => {
@@ -69,7 +75,14 @@ function Graph() {
   return (
     <>
       <Chart
-        options={options}
+        options={{
+          ...options,
+          chart: {
+            toolbar: {
+              show: !!data && data.length <= MAX_ITEMS,
+            },
+          },
+        }}
         series={[{ data: data || [] }]}
         type="candlestick"
         height="90%"
