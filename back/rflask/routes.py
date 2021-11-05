@@ -1,7 +1,8 @@
 from datetime import datetime
-from flask import jsonify, request
-from database import insert_data_from_file, select_all_data, select_data_between_dates, create_db
-from algo import get_data_by_date
+import time
+from flask import json, jsonify, request, g
+from database import insert_data_from_file, select_all_data, select_data_between_dates, create_db, select_data_at_date
+from algo import get_data_by_date, get_data_between_date
 from .app import app
 from .constants import CSV_FILE_PATH
 
@@ -13,7 +14,7 @@ def send_data_to_db():
     return "DB successfully created."
 
 
-@app.route("/data", methods=["GET"])
+@app.route("/data/db", methods=["GET"])
 def get_data_interval():
     begin = request.args.get('begin')
     end = request.args.get('end')
@@ -24,8 +25,9 @@ def get_data_interval():
         end = int(end)
     except ValueError:
         raise Exception("Invalid params")
-    data = select_data_between_dates(begin, end)
-    return jsonify(data)
+    if begin == end:
+        return jsonify(select_data_at_date(begin))
+    return jsonify(select_data_between_dates(begin, end))
 
 
 @app.route("/data/algo", methods=["GET"])
@@ -35,14 +37,13 @@ def get_data_interval_algo():
     if end == 'null':
         end = begin
     try:
-        begin = int(begin)
-        end = int(end)
+        begin = datetime.fromtimestamp(int(begin)).date()
+        end = datetime.fromtimestamp(int(end)).date()
     except ValueError:
         raise Exception("Invalid params")
     if begin == end:
-        begin = datetime.fromtimestamp(begin).date()
         return jsonify(get_data_by_date(begin))
-    raise NotImplementedError("Not implemented yet")
+    return jsonify(get_data_between_date(begin, end))
 
 
 @app.route("/flush", methods=["GET"])
@@ -51,6 +52,19 @@ def flush():
     return jsonify(data)
 
 
-@ app.errorhandler(Exception)
+@app.errorhandler(Exception)
 def exception_handler(error):
     return jsonify({"error": str(error)}), 400
+
+
+@app.before_request
+def before_request():
+    g.begin_time = time.time()
+
+
+@app.after_request
+def after_request(response):
+    end_time = time.time()
+    response.data = json.dumps(
+        {'time': end_time - g.begin_time, 'data': response.get_json()})
+    return response

@@ -8,6 +8,7 @@ class LinkedList:
     def __init__(self):
         self.head = None
         self.last_node = None
+        self.size = 0
 
     def to_list(self):
         l = []
@@ -24,9 +25,11 @@ class LinkedList:
         if self.head is None:
             self.head = Node(data, None)
             self.last_node = self.head
+            self.size += 1
             return
 
         new_node = Node(data, self.head)
+        self.size += 1
         self.head = new_node
 
     def insert_unique(self, data):
@@ -41,7 +44,7 @@ class LinkedList:
     def iter(self):
         node = self.head
         while node:
-            yield node
+            yield node.data
             node = node.next
 
     def __str__(self) -> str:

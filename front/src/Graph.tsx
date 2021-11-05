@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { renderToString } from "react-dom/server";
 import Chart, { Props } from "react-apexcharts";
 import Loader from "react-js-loader";
+import _ from "lodash";
 import { ENDPOINT } from "./constants";
 import { useStore } from "./store";
 import { APIData } from "./types";
@@ -38,39 +39,66 @@ const options: Props["options"] = {
 function Graph() {
   const [beginDate] = useStore("beginDate");
   const [endDate] = useStore("endDate");
+  const [algo] = useStore("algo");
   const [data, setData] = useStore("data");
   const [loading, setLoading] = useState(false);
+  const [time, setTime] = useState<null | number>(null);
+  const firstFetch = useRef(true);
 
-  const fetchData = useCallback(async () => {
-    setLoading(true);
-    if (data && data.length > MAX_ITEMS) {
-      setData([]);
-    }
-    try {
-      const res = await fetch(
-        `${ENDPOINT}/data?begin=${beginDate}&end=${endDate}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
+  const fetchData = useCallback(
+    async (begin, end, algo, shouldClearData) => {
+      setLoading(true);
+      try {
+        const res = await fetch(
+          `${ENDPOINT}/data/${algo}?begin=${begin}&end=${end}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        const {
+          data: newData,
+          time: newTime,
+        }: { data: APIData[]; time: number } = await res.json();
+        if (shouldClearData) {
+          setData([]);
         }
-      );
-      const data: APIData[] = await res.json();
-      setData(
-        data.map((d) => ({
-          x: new Date(d.date),
-          y: [d.opening, d.high, d.low, d.closing],
-        }))
-      );
-    } catch {}
-    setLoading(false);
+        setTime(newTime);
+        setData(
+          newData.map((d) => ({
+            x: new Date(d.date),
+            y: [d.opening, d.high, d.low, d.closing],
+          }))
+        );
+      } catch {}
+      setLoading(false);
+    },
+    [setData]
+  );
+
+  const debouncedFetchData = useMemo(
+    () => _.debounce(fetchData, 1000),
+    [fetchData]
+  );
+
+  const reloadData = useCallback(async () => {
+    const shouldClearData = data && data.length > MAX_ITEMS;
+    if (beginDate) {
+      if (firstFetch.current) {
+        firstFetch.current = false;
+        fetchData(beginDate, endDate, algo, shouldClearData);
+      } else {
+        debouncedFetchData(beginDate, endDate, algo, shouldClearData);
+      }
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [beginDate, endDate, setData]);
+  }, [beginDate, debouncedFetchData, endDate, algo, fetchData]);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    reloadData();
+  }, [reloadData]);
 
   return (
     <>
@@ -102,6 +130,13 @@ function Graph() {
             color={"#666"}
             size={100}
           />
+        </div>
+      )}
+      {time !== null && (
+        <div className="fixed top-100 right-5 p-15 text-right">
+          Temps d'exécution
+          <br />
+          {(time * 1000).toFixed(3)}ms
         </div>
       )}
     </>

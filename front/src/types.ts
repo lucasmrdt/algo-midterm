@@ -3,6 +3,11 @@ export enum InputChoice {
   BetweenDate = "between_date",
 }
 
+export enum AlgoChoice {
+  custom = "algo",
+  db = "db",
+}
+
 export interface Data {
   x: Date;
   y: [number, number, number, number];

@@ -1,10 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import { FormInput, FormSelect } from "shards-react";
 import Zoom from "react-reveal/Zoom";
-import { InputChoice } from "./types";
+import { AlgoChoice, InputChoice } from "./types";
 import { useStore } from "./store";
 
-const CHOICES = [
+const ALGO_CHOICES = [
+  { label: "Custom", value: AlgoChoice.custom },
+  { label: "SQLite", value: AlgoChoice.db },
+];
+
+const DATE_CHOICES = [
   { label: "À une date", value: InputChoice.UniqueDate },
   { label: "Entre 2 dates", value: InputChoice.BetweenDate },
 ];
@@ -19,6 +24,7 @@ function Input() {
   const [selected, setSelected] = useState(InputChoice.UniqueDate);
   const [, setBeginDate] = useStore("beginDate");
   const [, setEndDate] = useStore("endDate");
+  const [, setAlgoChoice] = useStore("algo");
   const [beginValue, setBeginValue] = useState(BEGIN_DATE);
   const [endValue, setEndValue] = useState<string | null>(null);
 
@@ -42,8 +48,21 @@ function Input() {
     <div className="flex px-10 py-20 items-center">
       <div className="mr-20">
         <Zoom>
+          <FormSelect
+            onChange={(e: any) => setAlgoChoice(e.currentTarget.value)}
+          >
+            {ALGO_CHOICES.map((choice) => (
+              <option key={choice.value} value={choice.value}>
+                {choice.label}
+              </option>
+            ))}
+          </FormSelect>
+        </Zoom>
+      </div>
+      <div className="mr-20">
+        <Zoom>
           <FormSelect onChange={(e: any) => setSelected(e.currentTarget.value)}>
-            {CHOICES.map((choice) => (
+            {DATE_CHOICES.map((choice) => (
               <option key={choice.value} value={choice.value}>
                 {choice.label}
               </option>

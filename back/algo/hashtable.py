@@ -34,9 +34,17 @@ class HashTable:
         hashvalue = self.hashfunction(key)
         bucket = self.buckets[hashvalue]
         for element in bucket.iter():
-            if element.data.key == key:
-                return element.data.value
+            if element.key == key:
+                return element.value
         return None
+
+    def getNbCollisions(self):
+        return sum(1 if bucket.size > 1 else 0 for bucket in self.buckets)
+
+    def iter(self):
+        for bucket in self.buckets:
+            for node in bucket.iter():
+                yield node.key, node.value
 
     def __getitem__(self, key):
         return self.get(key)
