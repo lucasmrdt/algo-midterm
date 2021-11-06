@@ -65,7 +65,7 @@ def get_data_by_date(date: datetime) -> RawData:
         raise ValueError(f"Date '{date}' not found")
 
 
-def get_data_between_date(begin: datetime, end: datetime) -> List[RawData]:
+def get_data_between_date(begin: datetime, end: datetime, k: int) -> List[RawData]:
     try:
         begin_index = ht_by_year_and_month[begin.year][begin.month][begin.day].index
     except TypeError:
@@ -74,7 +74,7 @@ def get_data_between_date(begin: datetime, end: datetime) -> List[RawData]:
         end_index = ht_by_year_and_month[end.year][end.month][end.day].index
     except TypeError:
         end_index = len(sorted_array) - 1
-    return [sorted_array[i].serealize() for i in range(begin_index, end_index + 1)]
+    return [sorted_array[i].serealize() for i in range(max(begin_index, end_index - k), end_index + 1)]
 
 
 def query_test_data():

@@ -4,7 +4,7 @@ import Input from "./Input";
 
 function App() {
   return (
-    <div className="w-full h-full relative">
+    <div className="w-full h-full relative overflow-hidden">
       <Input />
       <Graph />
     </div>

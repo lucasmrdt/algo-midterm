@@ -34,16 +34,20 @@ def get_data_interval():
 def get_data_interval_algo():
     begin = request.args.get('begin')
     end = request.args.get('end', begin)
+    k = request.args.get('k')
     if end == 'null':
         end = begin
     try:
         begin = datetime.fromtimestamp(int(begin)).date()
         end = datetime.fromtimestamp(int(end)).date()
+        k = int(k)
     except ValueError:
         raise Exception("Invalid params")
+    if k < 0:
+        k = float('-infinity')
     if begin == end:
         return jsonify(get_data_by_date(begin))
-    return jsonify(get_data_between_date(begin, end))
+    return jsonify(get_data_between_date(begin, end, k))
 
 
 @app.route("/flush", methods=["GET"])

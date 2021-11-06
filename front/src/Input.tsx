@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { FormInput, FormSelect } from "shards-react";
+import { FormInput, FormSelect, Slider } from "shards-react";
 import Zoom from "react-reveal/Zoom";
 import { AlgoChoice, InputChoice } from "./types";
 import { useStore } from "./store";
@@ -12,6 +12,7 @@ const ALGO_CHOICES = [
 const DATE_CHOICES = [
   { label: "À une date", value: InputChoice.UniqueDate },
   { label: "Entre 2 dates", value: InputChoice.BetweenDate },
+  { label: "Entre 2 dates (avec k)", value: InputChoice.BetweenDateWithK },
 ];
 
 const BEGIN_DATE = "2021-10-01";
@@ -24,6 +25,7 @@ function Input() {
   const [selected, setSelected] = useState(InputChoice.UniqueDate);
   const [, setBeginDate] = useStore("beginDate");
   const [, setEndDate] = useStore("endDate");
+  const [k, setK] = useStore("k");
   const [, setAlgoChoice] = useStore("algo");
   const [beginValue, setBeginValue] = useState(BEGIN_DATE);
   const [endValue, setEndValue] = useState<string | null>(null);
@@ -32,12 +34,20 @@ function Input() {
   const endRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (selected === InputChoice.BetweenDate) {
+    if (
+      selected === InputChoice.BetweenDate ||
+      selected === InputChoice.BetweenDateWithK
+    ) {
       setEndValue(END_DATE);
     } else {
       setEndValue(null);
     }
-  }, [selected, setEndDate]);
+    if (selected === InputChoice.BetweenDateWithK) {
+      setK(100);
+    } else {
+      setK(-1);
+    }
+  }, [selected, setEndDate, setK]);
 
   useEffect(() => {
     setBeginDate(formatInputDate(beginValue));
@@ -45,7 +55,7 @@ function Input() {
   }, [beginValue, endValue, setBeginDate, setEndDate]);
 
   return (
-    <div className="flex px-10 py-20 items-center">
+    <div className="flex px-10 my-20 items-center">
       <div className="mr-20">
         <Zoom>
           <FormSelect
@@ -70,7 +80,7 @@ function Input() {
           </FormSelect>
         </Zoom>
       </div>
-      <div className="flex-1 flex">
+      <div className="flex-1 flex items-center h-full">
         <div className="flex-1">
           <Zoom>
             <FormInput
@@ -85,7 +95,11 @@ function Input() {
           className="flex-1 ml-10"
           style={{
             transition: "max-width 1s",
-            maxWidth: selected === InputChoice.BetweenDate ? "100%" : 0,
+            maxWidth:
+              selected === InputChoice.BetweenDate ||
+              selected === InputChoice.BetweenDateWithK
+                ? "100%"
+                : 0,
             overflow: "hidden",
           }}
         >
@@ -95,6 +109,24 @@ function Input() {
             onChange={(e: any) => setEndValue(e.currentTarget.value)}
             ref={endRef}
           />
+        </div>
+        <div
+          className="flex-1 flex flex-col relative items-center"
+          style={{
+            transition: "max-width 1s",
+            maxWidth: selected === InputChoice.BetweenDateWithK ? "100%" : 0,
+            overflow: "hidden",
+          }}
+        >
+          <p className="absolute">K: {k}</p>
+          <div className="self-start w-full px-20">
+            <Slider
+              onSlide={(e: any) => setK(parseInt(e[0]))}
+              connect={[true, false]}
+              start={[k]}
+              range={{ min: 1, max: 100 }}
+            />
+          </div>
         </div>
       </div>
     </div>

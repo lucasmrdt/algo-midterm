@@ -7,6 +7,7 @@ import { AlgoChoice, Data } from "./types";
 export const store = createStore({
   beginDate: null as null | number,
   endDate: null as null | number,
+  k: -1,
   algo: AlgoChoice.custom,
   data: null as null | Data[],
 });

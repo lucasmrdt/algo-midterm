@@ -40,17 +40,18 @@ function Graph() {
   const [beginDate] = useStore("beginDate");
   const [endDate] = useStore("endDate");
   const [algo] = useStore("algo");
+  const [k] = useStore("k");
   const [data, setData] = useStore("data");
   const [loading, setLoading] = useState(false);
   const [time, setTime] = useState<null | number>(null);
   const firstFetch = useRef(true);
 
   const fetchData = useCallback(
-    async (begin, end, algo, shouldClearData) => {
+    async (begin, end, algo, k, shouldClearData) => {
       setLoading(true);
       try {
         const res = await fetch(
-          `${ENDPOINT}/data/${algo}?begin=${begin}&end=${end}`,
+          `${ENDPOINT}/data/${algo}?begin=${begin}&end=${end}&k=${k}`,
           {
             method: "GET",
             headers: {
@@ -88,13 +89,13 @@ function Graph() {
     if (beginDate) {
       if (firstFetch.current) {
         firstFetch.current = false;
-        fetchData(beginDate, endDate, algo, shouldClearData);
+        fetchData(beginDate, endDate, algo, k, shouldClearData);
       } else {
-        debouncedFetchData(beginDate, endDate, algo, shouldClearData);
+        debouncedFetchData(beginDate, endDate, algo, k, shouldClearData);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [beginDate, debouncedFetchData, endDate, algo, fetchData]);
+  }, [beginDate, debouncedFetchData, endDate, algo, k, fetchData]);
 
   useEffect(() => {
     reloadData();
@@ -116,7 +117,7 @@ function Graph() {
         }}
         series={[{ data: data || [] }]}
         type="candlestick"
-        height="90%"
+        height="80%"
       />
       {loading && (
         <div
@@ -133,7 +134,7 @@ function Graph() {
         </div>
       )}
       {time !== null && (
-        <div className="fixed top-100 right-5 p-15 text-right">
+        <div className="fixed top-130 right-0 p-15 text-right">
           Temps d'exécution
           <br />
           {(time * 1000).toFixed(3)}ms

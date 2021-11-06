@@ -6,8 +6,10 @@ class TreeNode(object):
 
 
 class BST:
-    def __init__(self):
+    def __init__(self, max_size=float("infinity")):
         self.root = None
+        self.max_size = max_size
+        self.size = 0
 
     def fromArray(self, arr):
         sorted_arr = sorted(arr)
