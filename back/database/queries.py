@@ -17,6 +17,15 @@ def select_data_between_dates(start, end) -> List[RawData]:
 
     return [row.serealize() for row in rows]
 
+def select_data_between_dates_by_desc(start, end, k) -> List[RawData]:
+    dateTimeObjS = datetime.datetime.fromtimestamp(start).strftime('%Y-%m-%d')
+    dateTimeObjE = datetime.datetime.fromtimestamp(end).strftime('%Y-%m-%d')
+    rows = RawData.query.filter(
+        RawData.date <= dateTimeObjE).filter(RawData.date >= dateTimeObjS)
+    rows_ordered = rows.order_by(desc(allData.opening))
+    rows_ordered_k = rows_ordered[:k-1]
+
+    return [row.serealize() for row in rows_ordered_k]
 
 def select_data_at_date(start) -> List[RawData]:
     dateTimeObjS = datetime.datetime.fromtimestamp(start).strftime('%Y-%m-%d')

@@ -1,7 +1,7 @@
 from datetime import datetime
 import time
 from flask import json, jsonify, request, g
-from database import insert_data_from_file, select_all_data, select_data_between_dates, create_db, select_data_at_date
+from database import insert_data_from_file, select_all_data, select_data_between_dates, create_db, select_data_at_date, select_data_between_dates_by_desc
 from algo import get_data_by_date, get_data_between_date
 from .app import app
 from .constants import CSV_FILE_PATH
@@ -47,8 +47,27 @@ def get_data_interval_algo():
         k = float('-infinity')
     if begin == end:
         return jsonify(get_data_by_date(begin))
-    return jsonify(get_data_between_date(begin, end, k))
+    return jsonify(select_data_between_dates_by_desc(begin, end, k))
 
+@app.route("/data/db-desc", methods=["GET"])
+def get_data_interval_desc_db():
+    begin = request.args.get('begin')
+    end = request.args.get('end', begin)
+    k = request.args.get('k')
+
+    if end == 'null':
+        end = begin
+    try:
+        begin = datetime.fromtimestamp(int(begin)).date()
+        end = datetime.fromtimestamp(int(end)).date()
+        k = int(k)
+    except ValueError:
+        raise Exception("Invalid params")
+    if k < 0:
+        k = float('-infinity')
+    if begin == end:
+        return jsonify(get_data_by_date(begin))
+    return jsonify(get_data_between_date(begin, end, k))
 
 @app.route("/flush", methods=["GET"])
 def flush():
