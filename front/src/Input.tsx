@@ -13,6 +13,14 @@ const DATE_CHOICES = [
   { label: "À une date", value: InputChoice.UniqueDate },
   { label: "Entre 2 dates", value: InputChoice.BetweenDate },
   { label: "Entre 2 dates (avec k)", value: InputChoice.BetweenDateWithK },
+  {
+    label: "Meilleur entre 2 dates (queue)",
+    value: InputChoice.BestKBetweenDateWithQueue,
+  },
+  {
+    label: "Meilleur entre 2 dates (sort)",
+    value: InputChoice.BestKBetweenDateWithSort,
+  },
 ];
 
 const BEGIN_DATE = "2021-10-01";
@@ -22,7 +30,7 @@ const formatInputDate = (value: string | null) =>
   value ? new Date(value).getTime() / 1000 : null;
 
 function Input() {
-  const [selected, setSelected] = useState(InputChoice.UniqueDate);
+  const [selected, setSelected] = useStore("selectedInput");
   const [, setBeginDate] = useStore("beginDate");
   const [, setEndDate] = useStore("endDate");
   const [k, setK] = useStore("k");
@@ -36,13 +44,19 @@ function Input() {
   useEffect(() => {
     if (
       selected === InputChoice.BetweenDate ||
-      selected === InputChoice.BetweenDateWithK
+      selected === InputChoice.BetweenDateWithK ||
+      selected === InputChoice.BestKBetweenDateWithQueue ||
+      selected === InputChoice.BestKBetweenDateWithSort
     ) {
       setEndValue(END_DATE);
     } else {
       setEndValue(null);
     }
-    if (selected === InputChoice.BetweenDateWithK) {
+    if (
+      selected === InputChoice.BetweenDateWithK ||
+      selected === InputChoice.BestKBetweenDateWithQueue ||
+      selected === InputChoice.BestKBetweenDateWithSort
+    ) {
       setK(100);
     } else {
       setK(-1);
@@ -97,7 +111,9 @@ function Input() {
             transition: "max-width 1s",
             maxWidth:
               selected === InputChoice.BetweenDate ||
-              selected === InputChoice.BetweenDateWithK
+              selected === InputChoice.BetweenDateWithK ||
+              selected === InputChoice.BestKBetweenDateWithQueue ||
+              selected === InputChoice.BestKBetweenDateWithSort
                 ? "100%"
                 : 0,
             overflow: "hidden",
@@ -114,7 +130,12 @@ function Input() {
           className="flex-1 flex flex-col relative items-center"
           style={{
             transition: "max-width 1s",
-            maxWidth: selected === InputChoice.BetweenDateWithK ? "100%" : 0,
+            maxWidth:
+              selected === InputChoice.BetweenDateWithK ||
+              selected === InputChoice.BestKBetweenDateWithQueue ||
+              selected === InputChoice.BestKBetweenDateWithSort
+                ? "100%"
+                : 0,
             overflow: "hidden",
           }}
         >

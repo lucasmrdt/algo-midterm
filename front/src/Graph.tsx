@@ -5,7 +5,7 @@ import Loader from "react-js-loader";
 import _ from "lodash";
 import { ENDPOINT } from "./constants";
 import { useStore } from "./store";
-import { APIData } from "./types";
+import { APIData, InputChoice } from "./types";
 
 const MAX_ITEMS = 365;
 
@@ -40,6 +40,7 @@ function Graph() {
   const [beginDate] = useStore("beginDate");
   const [endDate] = useStore("endDate");
   const [algo] = useStore("algo");
+  const [selected] = useStore("selectedInput");
   const [k] = useStore("k");
   const [data, setData] = useStore("data");
   const [loading, setLoading] = useState(false);
@@ -47,18 +48,21 @@ function Graph() {
   const firstFetch = useRef(true);
 
   const fetchData = useCallback(
-    async (begin, end, algo, k, shouldClearData) => {
+    async (begin, end, algo, k, selected, shouldClearData) => {
       setLoading(true);
+      let baseUrl = `${ENDPOINT}/data/${algo}`;
+      if (selected === InputChoice.BestKBetweenDateWithQueue) {
+        baseUrl += "/best-with-queue";
+      } else if (selected === InputChoice.BestKBetweenDateWithSort) {
+        baseUrl += "/best-with-sort";
+      }
       try {
-        const res = await fetch(
-          `${ENDPOINT}/data/${algo}?begin=${begin}&end=${end}&k=${k}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        const res = await fetch(`${baseUrl}?begin=${begin}&end=${end}&k=${k}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
         const {
           data: newData,
           time: newTime,
@@ -89,13 +93,20 @@ function Graph() {
     if (beginDate) {
       if (firstFetch.current) {
         firstFetch.current = false;
-        fetchData(beginDate, endDate, algo, k, shouldClearData);
+        fetchData(beginDate, endDate, algo, k, selected, shouldClearData);
       } else {
-        debouncedFetchData(beginDate, endDate, algo, k, shouldClearData);
+        debouncedFetchData(
+          beginDate,
+          endDate,
+          algo,
+          k,
+          selected,
+          shouldClearData
+        );
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [beginDate, debouncedFetchData, endDate, algo, k, fetchData]);
+  }, [beginDate, debouncedFetchData, endDate, algo, k, selected, fetchData]);
 
   useEffect(() => {
     reloadData();

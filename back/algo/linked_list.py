@@ -41,6 +41,15 @@ class LinkedList:
             node = node.next
         self.insert(data)
 
+    def pop(self):
+        if self.head is None:
+            return None
+
+        node = self.head
+        self.head = node.next
+        self.size -= 1
+        return node.data
+
     def iter(self):
         node = self.head
         while node:

@@ -6,9 +6,8 @@ class TreeNode(object):
 
 
 class BST:
-    def __init__(self, max_size=float("infinity")):
+    def __init__(self):
         self.root = None
-        self.max_size = max_size
         self.size = 0
 
     def fromArray(self, arr):
@@ -35,8 +34,7 @@ class BST:
         q = [self.root]
         i = 0
         while q:
-            s = ', '.join(
-                [f'{n.val}' for n in q])
+            s = ', '.join([f'{n.val}' for n in q])
             output += f'Depth {i} [{"FULL" if 2**i == len(q) else len(q)}]: {s}\n'
             q_next = []
             for n in q:

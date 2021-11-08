@@ -1,5 +1,6 @@
 from functools import total_ordering
-from enum import unique
+from typing import List
+from flask.json import jsonify
 from sqlalchemy import inspect
 from .db import db
 
@@ -28,3 +29,7 @@ class RawData(db.Model, Serealizer):
         if not isinstance(o, RawData):
             return NotImplemented
         return self.date < o.date
+
+
+def jsonify_models(models: List[RawData]):
+    return jsonify([m.serealize() for m in models])

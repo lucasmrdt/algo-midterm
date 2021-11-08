@@ -2,6 +2,8 @@ export enum InputChoice {
   UniqueDate = "unique_date",
   BetweenDate = "between_date",
   BetweenDateWithK = "between_date_with_k",
+  BestKBetweenDateWithQueue = "best_k_between_date_queue",
+  BestKBetweenDateWithSort = "best_k_between_date_sort",
 }
 
 export enum AlgoChoice {

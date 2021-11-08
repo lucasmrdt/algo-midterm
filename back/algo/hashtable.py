@@ -36,7 +36,7 @@ class HashTable:
         for element in bucket.iter():
             if element.key == key:
                 return element.value
-        return None
+        raise KeyError(key)
 
     def getNbCollisions(self):
         return sum(1 if bucket.size > 1 else 0 for bucket in self.buckets)
