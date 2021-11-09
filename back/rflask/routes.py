@@ -28,10 +28,27 @@ def get_data_interval():
     except ValueError:
         raise Exception("Invalid params")
     if begin == end:
-        return jsonify_models([select_data_at_date(begin)])
+        return jsonify_models(select_data_at_date(begin))
     if k > 0:
-        return jsonify_models(select_data_between_dates_by_desc(begin, end, k))
+        return jsonify_models(select_data_between_dates(begin, end, k))
     return jsonify_models(select_data_between_dates(begin, end))
+
+
+@app.route("/data/db/best-with-sort", methods=["GET"])
+def get_best_with_sort_data_interval_db():
+    begin = request.args.get('begin')
+    end = request.args.get('end')
+    k = request.args.get('k', -1)
+    try:
+        begin = int(begin)
+        end = int(end)
+        k = int(k)
+        assert k > 0
+    except ValueError:
+        raise Exception("Invalid params")
+    except AssertionError:
+        raise Exception("Invalid params")
+    return jsonify_models(select_data_between_dates_by_desc(begin, end, k))
 
 
 @app.route("/data/algo", methods=["GET"])

@@ -97,7 +97,7 @@ def get_data_between_date(begin: datetime, end: datetime, k=None) -> List[RawDat
         end_index = len(sorted_array) - 1
     if k is None:
         return sorted_array[begin_index:end_index + 1]
-    return sorted_array[max(begin_index, end_index - k):end_index + 1]
+    return sorted_array[max(begin_index, end_index - k + 1):end_index + 1]
 
 
 def get_k_best_data_between_date_with_queue(begin: datetime, end: datetime, k: int) -> List[RawData]:

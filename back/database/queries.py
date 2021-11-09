@@ -1,4 +1,5 @@
 from typing import List
+from sqlalchemy import desc
 import datetime
 import csv
 from .models import RawData
@@ -9,29 +10,34 @@ def select_all_data() -> List[RawData]:
     return RawData.query.all()
 
 
-def select_data_between_dates(start, end) -> List[RawData]:
+def select_data_between_dates(start, end, k=None) -> List[RawData]:
     dateTimeObjS = datetime.datetime.fromtimestamp(start).strftime('%Y-%m-%d')
     dateTimeObjE = datetime.datetime.fromtimestamp(end).strftime('%Y-%m-%d')
     rows = RawData.query.filter(
         RawData.date <= dateTimeObjE).filter(RawData.date >= dateTimeObjS)
 
-    return [row.serealize() for row in rows]
+    if k is None or k > rows.count():
+        return rows
+    return rows[-k:]
+
 
 def select_data_between_dates_by_desc(start, end, k) -> List[RawData]:
     dateTimeObjS = datetime.datetime.fromtimestamp(start).strftime('%Y-%m-%d')
     dateTimeObjE = datetime.datetime.fromtimestamp(end).strftime('%Y-%m-%d')
     rows = RawData.query.filter(
         RawData.date <= dateTimeObjE).filter(RawData.date >= dateTimeObjS)
-    rows_ordered = rows.order_by(desc(allData.opening))
-    rows_ordered_k = rows_ordered[:k-1]
+    rows_ordered = rows.order_by(desc(RawData.closing))
 
-    return [row.serealize() for row in rows_ordered_k]
+    return rows_ordered[:k]
+
 
 def select_data_at_date(start) -> List[RawData]:
     dateTimeObjS = datetime.datetime.fromtimestamp(start).strftime('%Y-%m-%d')
     rows = RawData.query.filter(RawData.date == dateTimeObjS)
 
-    return [row.serealize() for row in rows]
+    if rows.count() == 0:
+        raise ValueError(f"Date '{dateTimeObjS}' not found")
+    return rows
 
 
 def insert_data_from_file(file: str):

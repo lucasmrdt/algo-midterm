@@ -29,7 +29,7 @@ const DATE_CHOICES = [
   {
     label: "Meilleur entre 2 dates (sort)",
     value: InputChoice.BestKBetweenDateWithSort,
-    enabled: (algo: AlgoChoice) => algo === AlgoChoice.custom,
+    enabled: () => true,
   },
 ];
 
