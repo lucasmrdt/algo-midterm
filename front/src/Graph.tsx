@@ -3,6 +3,7 @@ import { renderToString } from "react-dom/server";
 import Chart, { Props } from "react-apexcharts";
 import Loader from "react-js-loader";
 import _ from "lodash";
+import { toast } from "react-toastify";
 import { ENDPOINT } from "./constants";
 import { useStore } from "./store";
 import { APIData, InputChoice } from "./types";
@@ -12,6 +13,11 @@ const MAX_ITEMS = 365;
 const options: Props["options"] = {
   xaxis: {
     type: "datetime",
+    tooltip: {
+      formatter(val: any) {
+        return new Date(val).toLocaleDateString();
+      },
+    },
   },
   yaxis: {
     labels: {
@@ -66,7 +72,11 @@ function Graph() {
         const {
           data: newData,
           time: newTime,
-        }: { data: APIData[]; time: number } = await res.json();
+        }: { data: APIData[] | { error: string }; time: number } =
+          await res.json();
+        if ("error" in newData) {
+          throw new Error(newData.error);
+        }
         if (shouldClearData) {
           setData([]);
         }
@@ -77,7 +87,10 @@ function Graph() {
             y: [d.opening, d.high, d.low, d.closing],
           }))
         );
-      } catch {}
+      } catch (e: any) {
+        toast(e.message, { type: "error" });
+        setData([]);
+      }
       setLoading(false);
     },
     [setData]

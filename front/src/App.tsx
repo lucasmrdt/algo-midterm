@@ -1,4 +1,4 @@
-import React from "react";
+import { ToastContainer } from "react-toastify";
 import Graph from "./Graph";
 import Input from "./Input";
 
@@ -7,6 +7,7 @@ function App() {
     <div className="w-full h-full relative overflow-hidden">
       <Input />
       <Graph />
+      <ToastContainer />
     </div>
   );
 }

@@ -22,6 +22,7 @@
     "react-nedux": "^1.0.17",
     "react-reveal": "^1.2.2",
     "react-scripts": "4.0.3",
+    "react-toastify": "^8.1.0",
     "shards-react": "^1.0.3",
     "typescript": "^4.1.2",
     "web-vitals": "^1.0.1"

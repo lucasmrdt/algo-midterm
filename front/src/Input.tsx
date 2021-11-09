@@ -10,16 +10,26 @@ const ALGO_CHOICES = [
 ];
 
 const DATE_CHOICES = [
-  { label: "À une date", value: InputChoice.UniqueDate },
-  { label: "Entre 2 dates", value: InputChoice.BetweenDate },
-  { label: "Entre 2 dates (avec k)", value: InputChoice.BetweenDateWithK },
+  { label: "À une date", value: InputChoice.UniqueDate, enabled: () => true },
+  {
+    label: "Entre 2 dates",
+    value: InputChoice.BetweenDate,
+    enabled: () => true,
+  },
+  {
+    label: "Entre 2 dates (avec k)",
+    value: InputChoice.BetweenDateWithK,
+    enabled: () => true,
+  },
   {
     label: "Meilleur entre 2 dates (queue)",
     value: InputChoice.BestKBetweenDateWithQueue,
+    enabled: (algo: AlgoChoice) => algo === AlgoChoice.custom,
   },
   {
     label: "Meilleur entre 2 dates (sort)",
     value: InputChoice.BestKBetweenDateWithSort,
+    enabled: (algo: AlgoChoice) => algo === AlgoChoice.custom,
   },
 ];
 
@@ -34,9 +44,10 @@ function Input() {
   const [, setBeginDate] = useStore("beginDate");
   const [, setEndDate] = useStore("endDate");
   const [k, setK] = useStore("k");
-  const [, setAlgoChoice] = useStore("algo");
+  const [algo, setAlgoChoice] = useStore("algo");
   const [beginValue, setBeginValue] = useState(BEGIN_DATE);
   const [endValue, setEndValue] = useState<string | null>(null);
+  const prevSelected = useRef(selected);
 
   const beginRef = useRef<HTMLInputElement>(null);
   const endRef = useRef<HTMLInputElement>(null);
@@ -48,7 +59,9 @@ function Input() {
       selected === InputChoice.BestKBetweenDateWithQueue ||
       selected === InputChoice.BestKBetweenDateWithSort
     ) {
-      setEndValue(END_DATE);
+      if (prevSelected.current === InputChoice.UniqueDate) {
+        setEndValue(END_DATE);
+      }
     } else {
       setEndValue(null);
     }
@@ -57,10 +70,16 @@ function Input() {
       selected === InputChoice.BestKBetweenDateWithQueue ||
       selected === InputChoice.BestKBetweenDateWithSort
     ) {
-      setK(100);
+      if (
+        prevSelected.current === InputChoice.UniqueDate ||
+        prevSelected.current === InputChoice.BetweenDate
+      ) {
+        setK(100);
+      }
     } else {
       setK(-1);
     }
+    prevSelected.current = selected;
   }, [selected, setEndDate, setK]);
 
   useEffect(() => {
@@ -86,7 +105,7 @@ function Input() {
       <div className="mr-20">
         <Zoom>
           <FormSelect onChange={(e: any) => setSelected(e.currentTarget.value)}>
-            {DATE_CHOICES.map((choice) => (
+            {DATE_CHOICES.filter((d) => d.enabled(algo)).map((choice) => (
               <option key={choice.value} value={choice.value}>
                 {choice.label}
               </option>
