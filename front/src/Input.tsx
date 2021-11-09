@@ -22,7 +22,7 @@ const DATE_CHOICES = [
     enabled: () => true,
   },
   {
-    label: "Meilleur entre 2 dates (queue)",
+    label: "Meilleur entre 2 dates (priority queue)",
     value: InputChoice.BestKBetweenDateWithQueue,
     enabled: (algo: AlgoChoice) => algo === AlgoChoice.custom,
   },
@@ -74,13 +74,22 @@ function Input() {
         prevSelected.current === InputChoice.UniqueDate ||
         prevSelected.current === InputChoice.BetweenDate
       ) {
-        setK(100);
+        setK(10);
       }
     } else {
       setK(-1);
     }
     prevSelected.current = selected;
   }, [selected, setEndDate, setK]);
+
+  useEffect(() => {
+    if (
+      algo === AlgoChoice.db &&
+      selected === InputChoice.BestKBetweenDateWithQueue
+    ) {
+      setSelected(InputChoice.BestKBetweenDateWithSort);
+    }
+  }, [algo, selected, setSelected]);
 
   useEffect(() => {
     setBeginDate(formatInputDate(beginValue));
@@ -104,7 +113,10 @@ function Input() {
       </div>
       <div className="mr-20">
         <Zoom>
-          <FormSelect onChange={(e: any) => setSelected(e.currentTarget.value)}>
+          <FormSelect
+            value={selected}
+            onChange={(e: any) => setSelected(e.currentTarget.value)}
+          >
             {DATE_CHOICES.filter((d) => d.enabled(algo)).map((choice) => (
               <option key={choice.value} value={choice.value}>
                 {choice.label}
