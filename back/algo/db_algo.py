@@ -33,6 +33,9 @@ class RawDataOrderedByClosingPrice:
             return NotImplemented
         return self.data.closing < o.data.closing
 
+    def __str__(self) -> str:
+        return str(self.data.closing)
+
 
 def create_hashtable_by_year(data: List[RawData]):
     # creating
@@ -99,8 +102,8 @@ def get_data_between_date(begin: datetime, end: datetime, k=None) -> List[RawDat
 
 def get_k_best_data_between_date_with_queue(begin: datetime, end: datetime, k: int) -> List[RawData]:
     data = get_data_between_date(begin, end)
-    pq = PriorityQueue(k)
     k = min(k, len(data))
+    pq = PriorityQueue(k)
     for row in data:
         pq.insert(RawDataOrderedByClosingPrice(row))
     return [pq.pop().data for _ in range(k)]

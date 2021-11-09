@@ -1,24 +1,19 @@
-from .linked_list import LinkedList
-
-
 class PriorityQueue:
     def __init__(self, max_size):
         self.max_size = max_size
-        self.data = [None] * (max_size + 1)
+        self.data = [None] * max_size
         self.size = 0
-        self.queue_idx = LinkedList()
-        for i in range(max_size - 1, -1, -1):
-            self.queue_idx.insert(i)
 
     def insert(self, value):
-        i = self.queue_idx.pop()
-        if i is None:
-            i = self.max_size
-        self.data[i] = value
-        self.size += 1
-        self._bubble_up(i)
-        if self.size > self.max_size:
-            self.pop()
+        if self.size == self.max_size:
+            if value > self.data[0]:
+                self.data[0] = value
+                self._bubble_down_head()
+        else:
+            i = self.size
+            self.data[i] = value
+            self.size += 1
+            self._bubble_up(i)
 
     def pop(self):
         if self.size == 0:
@@ -60,7 +55,34 @@ class PriorityQueue:
                     i = r
         if prev_i is not None:
             self.data[prev_i] = None
-            self.queue_idx.insert(prev_i)
+
+    def _bubble_down_head(self):
+        def update_min(curr, l, r):
+            if l is None and r is None:
+                return None
+            if l is None:
+                if self.data[r] < self.data[curr]:
+                    self.data[r], self.data[curr] = self.data[curr], self.data[r]
+                    return r
+                return None
+            if r is None:
+                if self.data[l] < self.data[curr]:
+                    self.data[l], self.data[curr] = self.data[curr], self.data[l]
+                    return l
+                return None
+            if self.data[l] <= self.data[r] and self.data[l] < self.data[curr]:
+                self.data[l], self.data[curr] = self.data[curr], self.data[l]
+                return l
+            if self.data[r] <= self.data[l] and self.data[r] < self.data[curr]:
+                self.data[r], self.data[curr] = self.data[curr], self.data[r]
+                return r
+            return None
+
+        curr = 0
+        while curr is not None:
+            l = self._child_left(curr)
+            r = self._child_right(curr)
+            curr = update_min(curr, l, r)
 
     def _child_left(self, i):
         l = 2 * i + 1
@@ -107,10 +129,9 @@ if __name__ == "__main__":
     sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 
     import random
-    k = 4
+    k = 10
     p = PriorityQueue(k)
-    l = list(range(20))
-    random.shuffle(l)
+    l = list(range(1000))[::-1]
     for i, el in enumerate(l):
         p.insert(el)
         print(f"\n\nSTEP {i}: insert '{el}'")

@@ -94,9 +94,9 @@ def flush():
     return jsonify(data)
 
 
-# @app.errorhandler(Exception)
-# def exception_handler(error):
-#     return jsonify({"error": str(error)}), 400
+@app.errorhandler(Exception)
+def exception_handler(error):
+    return jsonify({"error": str(error)}), 400
 
 
 @app.before_request
