@@ -5,6 +5,7 @@ from database import select_all_data, RawData
 from .hashtable import HashTable
 from .priority_queue import PriorityQueue
 
+# these variables are computed only one time before running the server, it could have been stored in a file to avoid re-compute
 sorted_array = None
 ht_by_year_and_month = None
 
