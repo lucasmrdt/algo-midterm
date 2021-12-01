@@ -10,6 +10,7 @@ It is hosted on [https://algo-midterm.netlify.app/](https://algo-midterm.netlify
 
 ```bash
 cd front
+corepack enable
 yarn install
 yarn start
 ```
