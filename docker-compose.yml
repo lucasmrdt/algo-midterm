@@ -7,8 +7,12 @@ services:
       - "3000:3000"
     links:
       - back
+    volumes:
+      - ./front:/front
   back:
     container_name: back
     build: ./back
+    volumes:
+      - ./back:/back
     ports:
       - "5000:5000"
