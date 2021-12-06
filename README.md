@@ -4,7 +4,15 @@
 
 It is hosted on [https://algo-midterm.netlify.app/](https://algo-midterm.netlify.app/)
 
-## Installation
+## Installation (With docker)
+
+```
+docker-compose build
+docker-compose up
+```
+
+
+## Installation (Without docker)
 
 ### Front
 
