@@ -47,6 +47,8 @@ function Graph() {
   const [endDate] = useStore("endDate");
   const [algo] = useStore("algo");
   const [selected] = useStore("selectedInput");
+  const [displayPrediction] = useStore("displayPrediction");
+  const [market] = useStore("market");
   const [k] = useStore("k");
   const [data, setData] = useStore("data");
   const [loading, setLoading] = useState(false);
@@ -54,7 +56,16 @@ function Graph() {
   const firstFetch = useRef(true);
 
   const fetchData = useCallback(
-    async (begin, end, algo, k, selected, shouldClearData) => {
+    async (
+      begin,
+      end,
+      algo,
+      k,
+      selected,
+      displayPrediction,
+      market,
+      shouldClearData
+    ) => {
       setLoading(true);
       let baseUrl = `${ENDPOINT}/data/${algo}`;
       if (selected === InputChoice.BestKBetweenDateWithQueue) {
@@ -63,12 +74,15 @@ function Graph() {
         baseUrl += "/best-with-sort";
       }
       try {
-        const res = await fetch(`${baseUrl}?begin=${begin}&end=${end}&k=${k}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
+        const res = await fetch(
+          `${baseUrl}?begin=${begin}&end=${end}&k=${k}&prediction=${displayPrediction}&market=${market}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
         const {
           data: newData,
           time: newTime,
@@ -106,7 +120,16 @@ function Graph() {
     if (beginDate) {
       if (firstFetch.current) {
         firstFetch.current = false;
-        fetchData(beginDate, endDate, algo, k, selected, shouldClearData);
+        fetchData(
+          beginDate,
+          endDate,
+          algo,
+          k,
+          selected,
+          displayPrediction,
+          market,
+          shouldClearData
+        );
       } else {
         debouncedFetchData(
           beginDate,
@@ -114,12 +137,24 @@ function Graph() {
           algo,
           k,
           selected,
+          displayPrediction,
+          market,
           shouldClearData
         );
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [beginDate, debouncedFetchData, endDate, algo, k, selected, fetchData]);
+  }, [
+    beginDate,
+    debouncedFetchData,
+    endDate,
+    algo,
+    k,
+    displayPrediction,
+    market,
+    selected,
+    fetchData,
+  ]);
 
   useEffect(() => {
     reloadData();

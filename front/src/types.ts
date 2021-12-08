@@ -11,6 +11,16 @@ export enum AlgoChoice {
   db = "db",
 }
 
+export enum MarketChoice {
+  btc = "btc",
+  eur_usd = "eur_usd",
+  nasdaq = "nasdaq",
+  vix = "vix",
+  tsla = "tsla",
+  gold = "gold",
+  sp500 = "sp500",
+}
+
 export interface Data {
   x: Date;
   y: [number, number, number, number];
